@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import update from 'react-addons-update';
 import Header from './Header'
 import Layout from './Layout'
 import './App.scss'
@@ -15,6 +16,8 @@ export default class App extends Component {
     this.editCardName = this.editCardName.bind(this);
     this.doSearch = this.doSearch.bind(this);
     this.editEntryName = this.editEntryName.bind(this);
+    this.updateCardPosition = this.updateCardPosition.bind(this);
+    this.updateCardStatus = this.updateCardStatus.bind(this);
 
 }
 
@@ -72,24 +75,57 @@ handleDelete(id) {
     this.setState({
       cards: newCards
     })
-
   }
 
   doSearch(e){
   var query=e.target.value.toLowerCase();
   var queryResult=[];
-
-
-this.setState({
+  this.setState({
     cards: cards.filter(n =>
        n.entries.some(m => m.entry.includes(query))
        ||
        n.name.includes(query)
   )
-
       })
+}
 
+updateCardStatus(cardId, listId) {
+    // Find the index of the card
+    let cardIndex = this.state.cards.findIndex((card)=>card.id == cardId);
+    // Get the current card
+    let card = this.state.cards[cardIndex];
+    // Only proceed if hovering over a different list
+    if (card.status !== listId) {
+        // set the component state to the mutated object
+        this.setState(update(this.state, {
+            cards: {
+                [cardIndex]: {
+                    status: {$set: listId}
+                }
+            }
+        }));
+    }
+}
 
+updateCardPosition(cardId, afterId) {
+    // Only proceed if hovering over a different card
+    if (cardId !== afterId) {
+        // Find the index of the card
+        let cardIndex = this.state.cards.findIndex((card)=>card.id == cardId);
+        // Get the current card
+        let card = this.state.cards[cardIndex];
+        // Find the index of the card the user is hovering over
+        let afterIndex = this.state.cards.findIndex((card)=>card.id == afterId);
+        // Use splice to remove the card and reinsert it a the new index
+        this.setState(update(this.state, {
+            cards: {
+                $splice: [
+                    [cardIndex, 1],
+                    [afterIndex, 0, card]
+                ]
+            }
+        }));
+    }
 }
 
 
@@ -116,7 +152,13 @@ return (
                     editCardName={this.editCardName}
                     editEntryName={this.editEntryName}
                     view={this.state.view}
-                    handleDelete={this.handleDelete}/>
+                    handleDelete={this.handleDelete}
+                    cardCallbacks={{
+                        updateStatus: this.updateCardStatus.bind(this),
+                        updatePosition: this.updateCardPosition.bind(this)
+                    }}
+
+                    />
         </div>
       </div>
 

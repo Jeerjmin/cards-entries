@@ -1,11 +1,45 @@
 import React, { Component } from 'react';
+import { DragSource, DropTarget } from 'react-dnd';
 import Entry from './Entry'
 import './Card.scss';
 
 
 
+const cardDropSpec = {
+    hover(props, monitor) {
+        const draggedId = monitor.getItem().id;
+        props.cardCallbacks.updatePosition(draggedId, props.id);
+    }
+};
 
-export default class Card extends Component {
+let collectDrop = (connect, monitor) => {
+    return {
+        connectDropTarget: connect.dropTarget()
+    };
+};
+
+
+const cardDragSpec = {
+    beginDrag(props) {
+        return {
+            id: props.id
+        };
+    }
+};
+
+let collectDrag = (connect, monitor) => {
+    return {
+        connectDragSource: connect.dragSource()
+    };
+};
+
+function collect(connect, monitor) {
+    return {
+        connectDropTarget: connect.dropTarget()
+    };
+}
+
+class Card extends Component {
 	constructor(props) {
 	super(props);
 
@@ -96,6 +130,7 @@ addNameCard(e) {
 
 
 	render() {
+		  const { connectDragSource, connectDropTarget } = this.props;
 
 		const deleteCard = require('../assets/images/deleteIcon.png');
 		const editTitle = require('../assets/images/edit.png');
@@ -116,7 +151,7 @@ addNameCard(e) {
 	);
 });
 
-		return (
+		return connectDropTarget(connectDragSource(
 			<div className='wrapper'>
         <div className= 'hidden' onClick={this.delete}>
           <img src={deleteCard} id={id} alt="delete" />
@@ -131,7 +166,7 @@ addNameCard(e) {
           </div>
   				<div className='cardDetails' >
 						{this.state.id}
-						<input autoFocus
+						<input
 									 className="input-card"
 									 ref={(input) => { this.textInput = input; }}
 									 value={this.state.name}
@@ -148,6 +183,10 @@ addNameCard(e) {
           </div>
         </div>
 			</div>
-		);
+		));
 	}
 }
+
+const dragHighOrderCard = DragSource('card', cardDragSpec, collectDrag)(Card);
+const dragDropHighOrderCard = DropTarget('card', cardDropSpec, collectDrop)(dragHighOrderCard);
+export default dragDropHighOrderCard

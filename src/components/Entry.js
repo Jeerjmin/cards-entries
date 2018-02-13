@@ -46,7 +46,7 @@ _handleKeyPress(e) {
 }
 
 componentDidMount() {
-	this.textInput.focus()
+	
 }
 
 

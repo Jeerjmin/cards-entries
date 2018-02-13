@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
+import { DragDropContext } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
 import Card from '../components/Card'
 import './Layout.scss';
 
 
-export default class Layout extends Component {
+
+class Layout extends Component {
 	render() {
 		const { cards, view } = this.props;
 		const cardsData = cards.map((card) => {
@@ -16,6 +19,7 @@ export default class Layout extends Component {
 								entries={card.entries}
 								editCardName={this.props.editCardName}
 								editEntryName={this.props.editEntryName}
+								cardCallbacks={this.props.cardCallbacks}
 				 />
 				</div>
 	);
@@ -27,3 +31,5 @@ export default class Layout extends Component {
 		);
 	}
 }
+
+export default DragDropContext(HTML5Backend)(Layout);
