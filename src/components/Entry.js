@@ -9,14 +9,15 @@ export default class Entry extends Component {
 	super(props);
 
 	this.state = {
-    id: this.props.id,
+    idEntry: this.props.idEntry,
+		entry: this.props.entry
 	};
 
   this.delete = this.delete.bind(this)
 	this.edit = this.edit.bind(this);
 	this._handleKeyPress = this._handleKeyPress.bind(this);
 	this.blur = this.blur.bind(this);
-	this.addNameCard=this.addNameCard.bind(this);
+	this.addEntry=this.addEntry.bind(this);
 }
 delete(e) {
   	this.props.handleDelete(e.target.id);
@@ -31,10 +32,11 @@ edit(e) {
 		this.textInput.focus()
 }
 
-addNameCard(e) {
+addEntry(e) {
 	this.setState({
-		name: e.target.value
+		entry: e.target.value
 	})
+	this.props.editEntryName(e.target.value,this.props.idCard,this.state.idEntry)
 }
 
 _handleKeyPress(e) {
@@ -56,21 +58,24 @@ componentDidMount() {
 		return (
 			<div className='wrapper-entry'>
 				<div className='content'>
+
 					<input className ='input-entry'
 								 ref={(input) => { this.textInput = input; }}
-								 value={this.state.value}
+								 value={this.state.entry}
 								 onKeyPress={this._handleKeyPress}
-								 onChange={this.addNameCard}
-								 placeholder="Give name to card"
+								 onChange={this.addEntry}
+								 placeholder="Add entry"
 								 readOnly=""
 								 onBlur={this.blur}
 					>
+
 					</input>
+							{this.state.idEntry}
 				</div>
 
         <div className='deleteEntryGrid' >
-					<img src={editEntry} onClick={this.edit} id={this.state.id} alt="delete" className="deleteMe"/>
-          <img src={deleteEntry} onClick={this.delete} id={this.state.id} alt="delete" className="deleteMe"/>
+					<img src={editEntry} onClick={this.edit} id={this.state.idEntry} alt="delete" className="deleteMe"/>
+          <img src={deleteEntry} onClick={this.delete} id={this.state.idEntry} alt="delete" className="deleteMe"/>
         </div>
 
 			</div>

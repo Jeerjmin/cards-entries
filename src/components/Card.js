@@ -11,7 +11,7 @@ export default class Card extends Component {
 
 	this.state = {
 		id: this.props.id,
-		entry: [],
+		entry: this.props.entries,
 		name: this.props.name
 	};
 	this.addNameCard = this.addNameCard.bind(this);
@@ -36,13 +36,16 @@ addEntry() {
 
 	var newEntries=this.state.entry;
 	var newEntry = {
-		id: Math.random().toString(36).substring(7)
+		idEntry: Math.random().toString(36).substring(7),
+		entry: ''
 	};
 	newEntries.push(newEntry);
 	localStorage.setItem('entry', JSON.stringify(newEntries));
 	this.setState((prevState) => ({
 		entry: newEntries,
 	}));
+
+
 
 }
 
@@ -102,8 +105,11 @@ addNameCard(e) {
 			return (
 				<div key={item.id}>
 					<Entry
-						id={item.id}
+						idEntry={item.idEntry}
+						idCard={this.state.id}
+						entry={item.entry}
 						handleDelete={this.deleteEntry}
+						editEntryName={this.props.editEntryName}
 
 				 />
 				</div>
@@ -124,7 +130,7 @@ addNameCard(e) {
 
           </div>
   				<div className='cardDetails' >
-
+						{this.state.id}
 						<input autoFocus
 									 className="input-card"
 									 ref={(input) => { this.textInput = input; }}

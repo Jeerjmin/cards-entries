@@ -13,7 +13,9 @@ export default class Layout extends Component {
 								id={card.id}
 								handleDelete={this.props.handleDelete}
 								name={card.name}
+								entries={card.entries}
 								editCardName={this.props.editCardName}
+								editEntryName={this.props.editEntryName}
 				 />
 				</div>
 	);

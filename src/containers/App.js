@@ -14,6 +14,7 @@ export default class App extends Component {
     this.handleDelete = this.handleDelete.bind(this);
     this.editCardName = this.editCardName.bind(this);
     this.doSearch = this.doSearch.bind(this);
+    this.editEntryName = this.editEntryName.bind(this);
 
 }
 
@@ -24,7 +25,7 @@ handleSubmit() {
   var newCard = {
     id: Math.random().toString(36).substring(7),
     name: '',
-    entrys: []
+    entries: []
   };
   newCards.push(newCard);
   localStorage.setItem('cards', JSON.stringify(newCards));
@@ -48,28 +49,46 @@ handleDelete(id) {
   }
 
 
-  editCardName(name,id){
+  editCardName(name,id) {
     var newCards=cards;
     for (var i=0;i<newCards.length;i++)
-      if (newCards[i].id === id){
+      if (newCards[i].id === id)
         newCards[i].name = name;
-      }
-    localStorage.setItem('cards', JSON.stringify(newCards));
+
     this.setState((prevState) => ({
       cards: newCards,
-      view: prevState.view
     }));
   }
 
+  editEntryName(entry, idCard, idEntry) {
+    var newCards = this.state.cards;
 
+    for (var i=0;i<newCards.length;i++)
+      if (newCards[i].id === idCard)
+        for(var j=0;j<newCards[i].entries.length;j++)
+          if(newCards[i].entries[j].idEntry === idEntry)
+              newCards[i].entries[j].entry=entry
+
+    this.setState({
+      cards: newCards
+    })
+
+  }
 
   doSearch(e){
   var query=e.target.value.toLowerCase();
   var queryResult=[];
 
-    this.setState((prevState) => ({
-      cards: cards.filter(item => (item.name.toLowerCase().includes(query)))
-    }));
+
+this.setState({
+    cards: cards.filter(n =>
+       n.entries.some(m => m.entry.includes(query))
+       ||
+       n.name.includes(query)
+  )
+
+      })
+
 
 }
 
@@ -78,7 +97,6 @@ handleDelete(id) {
 
   render() {
 
-    console.log("name",this.state.cards)
 
 return (
     <div className="App">
@@ -96,6 +114,7 @@ return (
             </div>
             <Layout cards={this.state.cards}
                     editCardName={this.editCardName}
+                    editEntryName={this.editEntryName}
                     view={this.state.view}
                     handleDelete={this.handleDelete}/>
         </div>
