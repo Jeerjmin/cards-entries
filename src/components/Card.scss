@@ -1,48 +1,9 @@
-@media screen and (min-width: 769px){
-	.card{
-		width: 280px;
-		margin: 0 auto;
-	}
-	.wrapper{
-		width: 50%;
-		float: left;
-		position: relative;
-		margin: 30px 0px;
-	}
-}
-@media screen and (max-width: 768px){
-	.card{
-		width: 100%;
-		margin: 0 auto;
-	}
-	.wrapper{
-		width: 45%;
-		float: left;
-		position: relative;
-		margin: 10px;
-	}
-}
-@media screen and (max-width: 425px){
-	.card{
-		width: 100%;
-		margin: 0 auto;
-	}
-	.wrapper{
-		width: 100%;
-		float: left;
-		position: relative;
-		margin: 10px;
-	}
-}
-.image{
-	width: 100%;
-	display: block;
-}
+
 .cardDetails{
 	padding: 20px 0;
 	min-height: 100px;
 	border-radius: 15px;
-	background-color: #D3D3D3;
+	background-color: #F4F4F4;;
 	height: auto;
 	width: 100%;
 	display: flex;
@@ -50,44 +11,41 @@
 }
 
 .input-card{
-		background-color: #d3d3d3;
+		background-color: #F4F4F4;;
 		border: 0px;
+		align-self: center;
+		font-weight: bold;
+		text-align: center;
+		background-size: 30px 30px;
+		padding: 10px 10px;
 }
-.cardTitle{
-	text-align: left;
-	font-weight: 600;
-	font-size: 16px;
-	padding: 2px 5px;
-	height: 20%;
-}
-.cardDescription{
-	text-align: left;
-	font-size: 12px;
-	padding: 1px 5px;
-	height: 80%;
-	word-wrap: break-word
-}
+
+
 
 .deleteCardGrid{
 	position: absolute;
 	right: 0;
 	cursor: pointer;
 }
-.deleteMe{
+.deleteMe-card{
+	height: 17px;
+	width: 17px;
+	margin-right: 10px;
+	margin-top: 10px;
+}
+
+.editMe-card {
 	height: 20px;
 	width: 20px;
 }
+
+
 .cardGridImageWrapper{
 	position: relative;
 	display: block;
 }
-.commentForm{
-	padding: 10px 0px;
-}
 
-.editTitle{
-  margin-left: 10px;
-  height: 20px;
-  width: 20px;
-  cursor: pointer;
+
+.button-card-add {
+	margin: 10px 50px;
 }

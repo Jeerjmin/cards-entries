@@ -4,21 +4,22 @@ import Header from './Header'
 import Layout from './Layout'
 import './App.scss'
 
+const plus = require('../assets/images/Plus.svg');
+const deleteCard = require('../assets/images/deleteIcon.png');
 
 var cards =  [];
 
 export default class App extends Component {
   constructor(props) {
   super(props);
-    this.state = {cards: cards, view: 'grid'};
+    this.state = {cards: cards};
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
     this.editCardName = this.editCardName.bind(this);
     this.doSearch = this.doSearch.bind(this);
     this.editEntryName = this.editEntryName.bind(this);
     this.updateCardPosition = this.updateCardPosition.bind(this);
-    this.updateCardStatus = this.updateCardStatus.bind(this);
-
+    this.updateEntryPosition = this.updateEntryPosition.bind(this);
 }
 
 
@@ -89,43 +90,47 @@ handleDelete(id) {
       })
 }
 
-updateCardStatus(cardId, listId) {
-    // Find the index of the card
-    let cardIndex = this.state.cards.findIndex((card)=>card.id == cardId);
-    // Get the current card
-    let card = this.state.cards[cardIndex];
-    // Only proceed if hovering over a different list
-    if (card.status !== listId) {
-        // set the component state to the mutated object
-        this.setState(update(this.state, {
-            cards: {
-                [cardIndex]: {
-                    status: {$set: listId}
-                }
-            }
-        }));
+updateCardPosition(cardId, afterId) {
+    if (cardId !== afterId) {
+        let cardIndex = this.state.cards.findIndex((card)=>card.id == cardId);
+        console.log('gj', cardIndex)
+        let card = this.state.cards[cardIndex];
+        let afterIndex = this.state.cards.findIndex((card)=>card.id == afterId);
+
+        var stateCopy = Object.assign({}, this.state);
+
+        [stateCopy.cards[cardIndex],stateCopy.cards[afterIndex]]
+          =
+        [stateCopy.cards[afterIndex],stateCopy.cards[cardIndex]]
+
+        this.setState(stateCopy);
+
+
     }
 }
 
-updateCardPosition(cardId, afterId) {
-    // Only proceed if hovering over a different card
-    if (cardId !== afterId) {
-        // Find the index of the card
-        let cardIndex = this.state.cards.findIndex((card)=>card.id == cardId);
-        // Get the current card
-        let card = this.state.cards[cardIndex];
-        // Find the index of the card the user is hovering over
-        let afterIndex = this.state.cards.findIndex((card)=>card.id == afterId);
-        // Use splice to remove the card and reinsert it a the new index
-        this.setState(update(this.state, {
-            cards: {
-                $splice: [
-                    [cardIndex, 1],
-                    [afterIndex, 0, card]
-                ]
-            }
-        }));
-    }
+updateEntryPosition(Id, afterId) {
+  if (Id !== afterId) {
+    let cardIndex;
+    let entryIndex;
+    let afterIndex;
+    this.state.cards.map(card => card.entries.findIndex((entry) =>
+                     entry.idEntry == Id)).forEach((item,index) =>
+                     (item>=0) ? [entryIndex, cardIndex]=[item,index] : 0)
+
+    this.state.cards.map(card => card.entries.findIndex((entry) =>
+                     entry.idEntry == afterId)).forEach(item =>
+                     (item>=0) ? afterIndex=item : 0)
+
+
+    var stateCopy = Object.assign({}, this.state);
+
+    [stateCopy.cards[cardIndex].entries[entryIndex], stateCopy.cards[cardIndex].entries[afterIndex]]
+      =
+    [stateCopy.cards[cardIndex].entries[afterIndex], stateCopy.cards[cardIndex].entries[entryIndex]]
+
+    this.setState(stateCopy);
+  }
 }
 
 
@@ -136,7 +141,7 @@ updateCardPosition(cardId, afterId) {
 
 return (
     <div className="App">
-      <Header handleSubmit={this.handleSubmit.bind(this)} />
+      <Header />
       <div className="App-body">
         <div className="filterWrapper">
             <div className="searchbar">
@@ -147,16 +152,17 @@ return (
                        name="search"
                        placeholder="Search.."/>
               </form>
+              <form >
+                <img className="addCard" src={plus}  alt="add" onClick={this.handleSubmit.bind(this)} />
+
+              </form>
             </div>
             <Layout cards={this.state.cards}
                     editCardName={this.editCardName}
                     editEntryName={this.editEntryName}
-                    view={this.state.view}
                     handleDelete={this.handleDelete}
-                    cardCallbacks={{
-                        updateStatus: this.updateCardStatus.bind(this),
-                        updatePosition: this.updateCardPosition.bind(this)
-                    }}
+                    updateCardPosition={this.updateCardPosition}
+                    updateEntryPosition={this.updateEntryPosition}
 
                     />
         </div>

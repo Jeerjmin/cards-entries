@@ -1,14 +1,21 @@
 import React, { Component } from 'react';
-import { DragSource, DropTarget } from 'react-dnd';
+import { DragSource, DropTarget, DragDropContext } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import Entry from './Entry'
 import './Card.scss';
 
+const deleteCard = require('../assets/images/deleteIcon.png');
+const editTitle = require('../assets/images/edit.png');
 
+
+
+//CARD DND
 
 const cardDropSpec = {
     hover(props, monitor) {
         const draggedId = monitor.getItem().id;
-        props.cardCallbacks.updatePosition(draggedId, props.id);
+        props.updateCardPosition(draggedId, props.id);
     }
 };
 
@@ -57,14 +64,9 @@ class Card extends Component {
 	this.blur = this.blur.bind(this);
 }
 
-
-
-
 delete(e) {
 	this.props.handleDelete(e.target.id);
 }
-
-
 
 addEntry() {
 
@@ -80,13 +82,13 @@ addEntry() {
 	}));
 
 
-
 }
 
 deleteEntry(id) {
+		console.log('delete',id)
 	var entry = this.state.entry;
 	for (var i = 0; i < entry.length; i++) {
-		if (entry[i].id === id) {
+		if (entry[i].idEntry === id) {
 			entry.splice(i,1);
 			break;
 		}
@@ -132,61 +134,71 @@ addNameCard(e) {
 	render() {
 		  const { connectDragSource, connectDropTarget } = this.props;
 
-		const deleteCard = require('../assets/images/deleteIcon.png');
-		const editTitle = require('../assets/images/edit.png');
-		const { Title, Description, id, view }=this.props;
+		const {id}=this.props;
 
 		const entryData = this.state.entry.map((item) => {
 			return (
-				<div key={item.id}>
+				<div key={item.idEntry}>
 					<Entry
 						idEntry={item.idEntry}
 						idCard={this.state.id}
 						entry={item.entry}
 						handleDelete={this.deleteEntry}
 						editEntryName={this.props.editEntryName}
+						updateEntryPosition={this.props.updateEntryPosition}
+
 
 				 />
 				</div>
 	);
 });
 
+
+
 		return connectDropTarget(connectDragSource(
+
+
+
 			<div className='wrapper'>
+				<ReactCSSTransitionGroup transitionName="toggle"
+																 transitionEnterTimeout={250}
+																 transitionLeaveTimeout={250} >
         <div className= 'hidden' onClick={this.delete}>
           <img src={deleteCard} id={id} alt="delete" />
         </div>
         <div className='card'>
           <div className='cardGridImageWrapper'>
             <div className='deleteCardGrid' >
-							<img src={editTitle} id= {id} onClick={this.edit} alt="edit" className="deleteMe" />
-              <img src={deleteCard} id={id} onClick={this.delete} alt="delete" className="deleteMe" />
+							<img src={editTitle} id= {id} onClick={this.edit} alt="edit" className="editMe-card" />
+              <img src={deleteCard} id={id} onClick={this.delete} alt="delete" className="deleteMe-card" />
             </div>
 
           </div>
   				<div className='cardDetails' >
-						{this.state.id}
 						<input
 									 className="input-card"
 									 ref={(input) => { this.textInput = input; }}
 									 value={this.state.name}
 									 onKeyPress={this._handleKeyPress}
 							 		 onChange={this.addNameCard}
-									 placeholder="Give name to card"
+									 placeholder="Enter name for card"
 									 readOnly=""
 									 onBlur={this.blur}
 						>
 						</input>
 
-						<button onClick={this.addEntry}>Добавить запись...</button>
+						<button className="button-card-add" onClick={this.addEntry}>Add entry</button>
 						{entryData}
           </div>
         </div>
+							</ ReactCSSTransitionGroup>
 			</div>
+
+
 		));
 	}
 }
 
 const dragHighOrderCard = DragSource('card', cardDragSpec, collectDrag)(Card);
 const dragDropHighOrderCard = DropTarget('card', cardDropSpec, collectDrop)(dragHighOrderCard);
-export default dragDropHighOrderCard
+export default DragDropContext(HTML5Backend)(dragDropHighOrderCard);

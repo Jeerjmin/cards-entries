@@ -1,10 +1,45 @@
 import React, { Component } from 'react';
+import { DragSource, DropTarget } from 'react-dnd';
 
 import './Entry.scss';
+const deleteEntry = require('../assets/images/deleteIcon.png');
+const editEntry = require('../assets/images/edit.png');
+
+const entryDropSpec = {
+    hover(props, monitor) {
+        const draggedId = monitor.getItem().idEntry;
+        props.updateEntryPosition(draggedId, props.idEntry);
+    }
+};
+
+let collectDrop = (connect, monitor) => {
+    return {
+        connectDropTarget: connect.dropTarget()
+    };
+};
 
 
+const entryDragSpec = {
+    beginDrag(props) {
+        return {
+            idEntry: props.idEntry
+        };
+    }
+};
 
-export default class Entry extends Component {
+let collectDrag = (connect, monitor) => {
+    return {
+        connectDragSource: connect.dragSource()
+    };
+};
+
+function collect(connect, monitor) {
+    return {
+        connectDropTarget: connect.dropTarget()
+    };
+}
+
+class Entry extends Component {
 	constructor(props) {
 	super(props);
 
@@ -20,7 +55,8 @@ export default class Entry extends Component {
 	this.addEntry=this.addEntry.bind(this);
 }
 delete(e) {
-  	this.props.handleDelete(e.target.id);
+  	this.props.handleDelete(this.state.idEntry);
+
 }
 
 blur(e) {
@@ -46,16 +82,15 @@ _handleKeyPress(e) {
 }
 
 componentDidMount() {
-	
+
 }
 
 
 
 	render() {
-    const deleteEntry = require('../assets/images/deleteIcon.png');
-		const editEntry = require('../assets/images/edit.png');
+		const { connectDragSource, connectDropTarget } = this.props;
 
-		return (
+		return connectDropTarget(connectDragSource(
 			<div className='wrapper-entry'>
 				<div className='content'>
 
@@ -64,21 +99,24 @@ componentDidMount() {
 								 value={this.state.entry}
 								 onKeyPress={this._handleKeyPress}
 								 onChange={this.addEntry}
-								 placeholder="Add entry"
+								 placeholder="Enter text..."
 								 readOnly=""
 								 onBlur={this.blur}
 					>
 
 					</input>
-							{this.state.idEntry}
 				</div>
 
         <div className='deleteEntryGrid' >
-					<img src={editEntry} onClick={this.edit} id={this.state.idEntry} alt="delete" className="deleteMe"/>
-          <img src={deleteEntry} onClick={this.delete} id={this.state.idEntry} alt="delete" className="deleteMe"/>
+					<img src={editEntry} onClick={this.edit} title="Edit entry" id={this.state.idEntry} alt="delete" className="editMe-entry"/>
+          <img src={deleteEntry} onClick={this.delete} title="Delete entry" id={this.state.idEntry} alt="delete" className="deleteMe-entry"/>
         </div>
 
 			</div>
-		);
+		));
 	}
 }
+
+const dragHighOrderEntry = DragSource('entry',entryDragSpec, collectDrag)(Entry);
+const dragDropHighOrderEntry = DropTarget('entry',entryDropSpec, collectDrop)(dragHighOrderEntry);
+export default dragDropHighOrderEntry
